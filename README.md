@@ -395,7 +395,7 @@ If you find this project helpful, please give it a ⭐️ on GitHub!
 
 <div align="center">
 
-**Built with ❤️ using modern web technologies**
+**Built with ❤️ by ParamBhaav technologies**
 
 [Report Bug](https://github.com/ParambhavTechSolutions/Client_food_tracking_app/issues) • [Request Feature](https://github.com/ParambhavTechSolutions/Client_food_tracking_app/issues)
 
