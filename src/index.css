@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -135,19 +135,20 @@
 }
 
 @layer components {
+
   /* Status badges */
   .status-scheduled {
     @apply bg-info/15 text-info;
   }
-  
+
   .status-out-for-delivery {
     @apply bg-warning/15 text-warning;
   }
-  
+
   .status-delivered {
     @apply bg-success/15 text-success;
   }
-  
+
   .status-paused {
     @apply bg-muted text-muted-foreground;
   }
@@ -183,6 +184,7 @@
 }
 
 @layer utilities {
+
   /* Safe area padding for mobile */
   .safe-bottom {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));

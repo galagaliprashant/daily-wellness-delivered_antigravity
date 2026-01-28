@@ -14,14 +14,21 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { PaymentGateway } from '@/components/PaymentGateway';
+import { useToast } from '@/hooks/use-toast';
 
 const quickAmounts = [500, 1000, 2000, 5000];
 
 export default function WalletPage() {
+  const { toast } = useToast();
   const [isAddMoneyOpen, setIsAddMoneyOpen] = useState(false);
+  const [isPaymentGatewayOpen, setIsPaymentGatewayOpen] = useState(false);
   const [selectedAmount, setSelectedAmount] = useState<number | null>(1000);
   const [customAmount, setCustomAmount] = useState('');
-  const isLowBalance = mockUser.walletBalance < 300;
+  const [walletBalance, setWalletBalance] = useState(mockUser.walletBalance);
+  const isLowBalance = walletBalance < 300;
+
+  const amountToPay = customAmount ? parseInt(customAmount) : selectedAmount;
 
   const getTransactionIcon = (type: WalletTransaction['type']) => {
     switch (type) {
@@ -45,6 +52,34 @@ export default function WalletPage() {
     }
   };
 
+  const handlePaymentSuccess = (transactionId: string, method: string) => {
+    const amount = amountToPay || 0;
+    setWalletBalance(prev => prev + amount);
+    setIsAddMoneyOpen(false);
+
+    toast({
+      title: "Payment Successful! 🎉",
+      description: `₹${amount} added to your wallet via ${method}`,
+      duration: 5000,
+    });
+
+    // Reset form
+    setSelectedAmount(1000);
+    setCustomAmount('');
+  };
+
+  const handleProceedToPay = () => {
+    if (!amountToPay || amountToPay <= 0) {
+      toast({
+        title: "Invalid Amount",
+        description: "Please select or enter a valid amount",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsPaymentGatewayOpen(true);
+  };
+
   return (
     <AppLayout>
       <div className="space-y-6 p-4 max-w-lg mx-auto">
@@ -61,9 +96,9 @@ export default function WalletPage() {
             </div>
             <span className="text-primary-foreground/80 font-medium">Available Balance</span>
           </div>
-          
+
           <div className="text-4xl font-bold mb-6">
-            ₹{mockUser.walletBalance.toLocaleString()}
+            ₹{walletBalance.toLocaleString()}
           </div>
 
           {isLowBalance && (
@@ -92,7 +127,7 @@ export default function WalletPage() {
               <DialogHeader>
                 <DialogTitle>Add Money to Wallet</DialogTitle>
               </DialogHeader>
-              
+
               <div className="space-y-6 pt-4">
                 {/* Quick Amounts */}
                 <div className="grid grid-cols-4 gap-2">
@@ -144,12 +179,12 @@ export default function WalletPage() {
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">New balance</span>
                     <span className="font-semibold text-success">
-                      ₹{mockUser.walletBalance + ((customAmount ? parseInt(customAmount) : selectedAmount) || 0)}
+                      ₹{walletBalance + (amountToPay || 0)}
                     </span>
                   </div>
                 </div>
 
-                <Button className="w-full h-12 text-lg" size="lg">
+                <Button onClick={handleProceedToPay} className="w-full h-12 text-lg" size="lg">
                   Proceed to Pay
                 </Button>
               </div>
@@ -214,6 +249,14 @@ export default function WalletPage() {
             ))}
           </div>
         </section>
+
+        {/* Payment Gateway Dialog */}
+        <PaymentGateway
+          isOpen={isPaymentGatewayOpen}
+          onClose={() => setIsPaymentGatewayOpen(false)}
+          amount={amountToPay || 0}
+          onSuccess={handlePaymentSuccess}
+        />
       </div>
     </AppLayout>
   );
